@@ -1,0 +1,8 @@
+service:
+  port: :8080
+
+database:
+  link: 'root:root@tcp(127.0.0.1:3306)/personal_example?charset=utf8mb4&parseTime=True&loc=Local'
+  maxIdle: 10
+  maxOpen: 100
+  maxLifeTime: 30
