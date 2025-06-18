@@ -70,7 +70,7 @@ func GetUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 		return nil, errors.New("参数错误")
 	}
 	// 提取分页与查询条件
-	req, err := utils.GetFields(body)
+	req, err := utils.GetOffsetFields(body)
 	if err != nil {
 		return nil, errors.New("参数解析失败")
 	}
