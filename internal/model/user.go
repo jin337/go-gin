@@ -64,13 +64,6 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
-// 查询前
-func (u *User) BeforeFind(tx *gorm.DB) (err error) {
-	fmt.Println("\033[32m查询前执行\033[0m")
-	// 处理逻辑
-	return nil
-}
-
 // 更新前
 func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
 	fmt.Println("\033[32m更新前执行\033[0m")

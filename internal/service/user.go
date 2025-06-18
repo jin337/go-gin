@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"go-gin/internal/model"
 	"go-gin/internal/utils"
 
@@ -60,9 +59,10 @@ func CreateUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 // 查询
 func GetUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 	var (
-		body  map[string]interface{}
-		list  []model.User
-		total int64
+		body     map[string]interface{}
+		list     []model.User
+		usersDTO []model.UserDTO
+		total    int64
 	)
 	// 获取参数
 	if err := c.ShouldBind(&body); err != nil {
@@ -80,15 +80,13 @@ func GetUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 
 	if pSize, ok := body["page_size"].(int); ok {
 		pageSize = pSize
-	}
-	if pSizeFloat, ok := body["page_size"].(float64); ok {
+	} else if pSizeFloat, ok := body["page_size"].(float64); ok {
 		pageSize = int(pSizeFloat)
 	}
 
 	if page > 0 && pageSize > 0 {
 		// 构建查询
 		query := DB.Model(&model.User{})
-		fmt.Println(body)
 		// 添加查询条件
 		conditions := map[string]interface{}{}
 		for key, value := range body {
@@ -113,19 +111,27 @@ func GetUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 		if result.Error != nil {
 			return nil, result.Error
 		}
+
+		for _, user := range list {
+			usersDTO = append(usersDTO, ToUserDTO(&user))
+		}
 		return map[string]interface{}{
-			"list":      list,
+			"list":      usersDTO,
 			"total":     total,
 			"page":      page,
 			"page_size": pageSize,
 		}, nil
 	}
+
 	// 查询全部用户
 	result := DB.Model(&model.User{}).Find(&list)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	return list, nil
+	for _, user := range list {
+		usersDTO = append(usersDTO, ToUserDTO(&user))
+	}
+	return usersDTO, nil
 }
 
 // 更新
