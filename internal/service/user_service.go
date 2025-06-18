@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"go-gin/internal/model"
 	"go-gin/internal/utils"
 
@@ -9,19 +10,26 @@ import (
 	"gorm.io/gorm"
 )
 
+func ToUserDTO(user *model.User) model.UserDTO {
+	return model.UserDTO{
+		ID:            user.ID,
+		UserName:      user.UserName,
+		Email:         user.Email,
+		Phone:         user.Phone,
+		IsActive:      user.IsActive,
+		LoginAttempts: user.LoginAttempts,
+		LastLoginAt:   user.LastLoginAt,
+		CreatedAt:     user.CreatedAt,
+		UpdatedAt:     user.UpdatedAt,
+	}
+}
+
 // 新增
 func CreateUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 	var body model.User
 	// 获取参数
 	if err := c.ShouldBind(&body); err != nil {
 		return nil, errors.New("参数错误")
-	}
-	// 参数赋值给对象指针
-	m := &model.User{
-		UserName: body.UserName,
-		PassWord: body.PassWord,
-		Email:    body.Email,
-		Phone:    body.Phone,
 	}
 	// 在表不存在时自动创建数据库表
 	// DB.AutoMigrate(&model.User{})
@@ -34,20 +42,19 @@ func CreateUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 	if err := utils.CheckUniqueFields(DB, &model.User{}, searchKey); err != nil {
 		return nil, err
 	}
-
+	// 参数赋值给对象指针
+	user := &model.User{
+		UserName: body.UserName,
+		PassWord: body.PassWord,
+		Email:    body.Email,
+		Phone:    body.Phone,
+	}
 	// 插入数据库
-	result := DB.Create(m)
+	result := DB.Create(user)
 	if result.Error != nil {
 		return nil, result.Error
-	} else {
-		return map[string]interface{}{
-			"id":        m.ID,
-			"user_name": m.UserName,
-			"email":     m.Email,
-			"phone":     m.Phone,
-			"is_active": m.IsActive,
-		}, nil
 	}
+	return ToUserDTO(user), nil
 }
 
 // 查询
@@ -62,9 +69,6 @@ func GetUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 		return nil, errors.New("参数错误")
 	}
 
-	// 构建查询
-	query := DB.Model(&model.User{})
-
 	// 判断是否启用分页
 	var page, pageSize int
 
@@ -76,12 +80,15 @@ func GetUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 
 	if pSize, ok := body["page_size"].(int); ok {
 		pageSize = pSize
-	} else if pSizeFloat, ok := body["page_size"].(float64); ok {
+	}
+	if pSizeFloat, ok := body["page_size"].(float64); ok {
 		pageSize = int(pSizeFloat)
 	}
 
 	if page > 0 && pageSize > 0 {
-
+		// 构建查询
+		query := DB.Model(&model.User{})
+		fmt.Println(body)
 		// 添加查询条件
 		conditions := map[string]interface{}{}
 		for key, value := range body {
@@ -105,22 +112,20 @@ func GetUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 
 		if result.Error != nil {
 			return nil, result.Error
-		} else {
-			return map[string]interface{}{
-				"list":      list,
-				"total":     total,
-				"page":      page,
-				"page_size": pageSize,
-			}, nil
 		}
+		return map[string]interface{}{
+			"list":      list,
+			"total":     total,
+			"page":      page,
+			"page_size": pageSize,
+		}, nil
 	}
 	// 查询全部用户
-	result := query.Find(&list)
+	result := DB.Model(&model.User{}).Find(&list)
 	if result.Error != nil {
 		return nil, result.Error
-	} else {
-		return list, nil
 	}
+	return list, nil
 }
 
 // 更新
@@ -151,12 +156,11 @@ func UpdateUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 	result := DB.Model(&model.User{}).Where("id = ?", body["id"]).Updates(body)
 	if result.Error != nil {
 		return nil, errors.New("更新失败")
-	} else {
-		if err := DB.Model(&model.User{}).Where("id = ?", body["id"]).First(&user).Error; err != nil {
-			return nil, errors.New("用户不存在")
-		}
-		return user, nil
 	}
+	if err := DB.Model(&model.User{}).Where("id = ?", body["id"]).First(&user).Error; err != nil {
+		return nil, errors.New("用户不存在")
+	}
+	return ToUserDTO(&user), nil
 
 }
 
@@ -171,10 +175,10 @@ func DeleteUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 	if err := DB.First(&model.User{}, body["id"]).Error; err != nil {
 		return nil, errors.New("用户不存在")
 	}
+
 	result := DB.Delete(&model.User{}, body["id"])
 	if result.Error != nil {
 		return nil, errors.New("删除失败")
-	} else {
-		return nil, nil
 	}
+	return nil, nil
 }
