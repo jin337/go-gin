@@ -9,17 +9,18 @@ import (
 	"gorm.io/gorm"
 )
 
-func ToUserDTO(user *model.User) model.UserDTO {
+// 统一返回内容
+func ToUserDTO(r *model.User) model.UserDTO {
 	return model.UserDTO{
-		ID:            user.ID,
-		UserName:      user.UserName,
-		Email:         user.Email,
-		Phone:         user.Phone,
-		IsActive:      user.IsActive,
-		LoginAttempts: user.LoginAttempts,
-		LastLoginAt:   user.LastLoginAt,
-		CreatedAt:     user.CreatedAt,
-		UpdatedAt:     user.UpdatedAt,
+		ID:            r.ID,
+		UserName:      r.UserName,
+		Email:         r.Email,
+		Phone:         r.Phone,
+		IsActive:      r.IsActive,
+		LoginAttempts: r.LoginAttempts,
+		LastLoginAt:   r.LastLoginAt,
+		CreatedAt:     r.CreatedAt,
+		UpdatedAt:     r.UpdatedAt,
 	}
 }
 
@@ -68,58 +69,41 @@ func GetUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 	if err := c.ShouldBind(&body); err != nil {
 		return nil, errors.New("参数错误")
 	}
-
-	// 判断是否启用分页
-	var page, pageSize int
-
-	if p, ok := body["page"].(int); ok {
-		page = p
-	} else if pFloat, ok := body["page"].(float64); ok {
-		page = int(pFloat)
+	// 提取分页与查询条件
+	req, err := utils.GetFields(body)
+	if err != nil {
+		return nil, errors.New("参数解析失败")
 	}
 
-	if pSize, ok := body["page_size"].(int); ok {
-		pageSize = pSize
-	} else if pSizeFloat, ok := body["page_size"].(float64); ok {
-		pageSize = int(pSizeFloat)
-	}
-
-	if page > 0 && pageSize > 0 {
+	if req.Page > 0 && req.PageSize > 0 {
 		// 构建查询
 		query := DB.Model(&model.User{})
 		// 添加查询条件
-		conditions := map[string]interface{}{}
-		for key, value := range body {
-			if key == "page" || key == "page_size" {
-				continue
-			}
-			conditions[key] = value
-		}
-		for key, value := range conditions {
+		for key, value := range req.Conditions {
 			query = query.Where(key+" = ?", value)
+		}
+
+		// 分页计算
+		offset := (req.Page - 1) * req.PageSize
+		result := query.Offset(offset).Limit(req.PageSize).Find(&list)
+
+		if result.Error != nil {
+			return nil, result.Error
+		}
+
+		for _, v := range list {
+			usersDTO = append(usersDTO, ToUserDTO(&v))
 		}
 
 		// 获取总数
 		if err := query.Count(&total).Error; err != nil {
 			return nil, err
 		}
-
-		// 分页计算
-		offset := (page - 1) * pageSize
-		result := query.Offset(offset).Limit(pageSize).Find(&list)
-
-		if result.Error != nil {
-			return nil, result.Error
-		}
-
-		for _, user := range list {
-			usersDTO = append(usersDTO, ToUserDTO(&user))
-		}
 		return map[string]interface{}{
 			"list":      usersDTO,
 			"total":     total,
-			"page":      page,
-			"page_size": pageSize,
+			"page":      req.Page,
+			"page_size": req.PageSize,
 		}, nil
 	}
 
@@ -128,8 +112,8 @@ func GetUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	for _, user := range list {
-		usersDTO = append(usersDTO, ToUserDTO(&user))
+	for _, v := range list {
+		usersDTO = append(usersDTO, ToUserDTO(&v))
 	}
 	return usersDTO, nil
 }
