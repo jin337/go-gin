@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -9,17 +10,16 @@ import (
 )
 
 type User struct {
-	ID            uint           `json:"id" gorm:"primarykey"`
-	UserName      string         `json:"user_name" gorm:"size:20;uniqueIndex;not null"`
-	PassWord      string         `json:"pass_word" gorm:"size:100;not null"`
-	Email         string         `json:"email" gorm:"size:50;uniqueIndex;not null"`
-	Phone         *string        `json:"phone" gorm:"size:11;uniqueIndex"`
-	IsActive      bool           `json:"is_active" gorm:"default:true"`
-	LoginAttempts int            `json:"login_attempts" gorm:"default:0" `
-	LastLoginAt   *time.Time     `json:"last_login_at"`
-	CreatedAt     time.Time      `json:"created_at"`
-	UpdatedAt     time.Time      `json:"updated_at"`
-	DeletedAt     gorm.DeletedAt ` json:"delete_at" gorm:"index"`
+	ID            uint       `json:"id" gorm:"primarykey"`
+	UserName      string     `json:"user_name" gorm:"size:20;uniqueIndex;not null"`
+	PassWord      string     `json:"pass_word" gorm:"size:100;not null"`
+	Email         string     `json:"email" gorm:"size:50;uniqueIndex;not null"`
+	Phone         *string    `json:"phone" gorm:"size:11;uniqueIndex"`
+	IsActive      int        `json:"is_active" gorm:"default:1"`
+	LoginAttempts int        `json:"login_attempts" gorm:"default:0" `
+	LastLoginAt   *time.Time `json:"last_login_at"`
+	CreatedAt     time.Time  `json:"created_at"`
+	UpdatedAt     time.Time  `json:"updated_at"`
 }
 
 // 表名
@@ -33,7 +33,7 @@ func hashPassword(password string) string {
 	return string(hashed)
 }
 
-// 密码加密钩子
+// 创建前
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	if u.PassWord != "" {
 		u.PassWord = hashPassword(u.PassWord)
@@ -50,9 +50,24 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
+// 查询前
+func (u *User) BeforeFind(tx *gorm.DB) (err error) {
+	fmt.Println("BeforeFind")
+	return nil
+}
+
+// 更新前
 func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
+	fmt.Println("BeforeUpdate")
 	if tx.Statement.Changed("Password") {
 		u.PassWord = hashPassword(u.PassWord)
 	}
+	return nil
+}
+
+// 删除前
+func (u *User) BeforeDelete(tx *gorm.DB) error {
+	// 处理逻辑
+	fmt.Println("BeforeDelete")
 	return nil
 }

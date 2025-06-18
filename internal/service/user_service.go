@@ -11,79 +11,170 @@ import (
 
 // 新增
 func CreateUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
-	// 获取参数
 	var body model.User
+	// 获取参数
 	if err := c.ShouldBind(&body); err != nil {
 		return nil, errors.New("参数错误")
 	}
-
-	user := &model.User{
+	// 参数赋值给对象指针
+	m := &model.User{
 		UserName: body.UserName,
 		PassWord: body.PassWord,
 		Email:    body.Email,
 		Phone:    body.Phone,
 	}
+	// 在表不存在时自动创建数据库表
+	// DB.AutoMigrate(&model.User{})
 
-	// 判断是否存在
+	// 判断参数是否重复
 	searchKey := map[string]interface{}{
 		"user_name": body.UserName,
+		"phone":     body.Phone,
 	}
 	if err := utils.CheckUniqueFields(DB, &model.User{}, searchKey); err != nil {
 		return nil, err
 	}
 
-	// DB.AutoMigrate(&model.User{}) // 在表不存在时自动创建数据库表
-	result := DB.Create(user)
+	// 插入数据库
+	result := DB.Create(m)
 	if result.Error != nil {
 		return nil, result.Error
 	} else {
 		return map[string]interface{}{
-			"id":        user.ID,
-			"user_name": user.UserName,
-			"email":     user.Email,
-			"phone":     user.Phone,
-			"is_active": user.IsActive,
+			"id":        m.ID,
+			"user_name": m.UserName,
+			"email":     m.Email,
+			"phone":     m.Phone,
+			"is_active": m.IsActive,
 		}, nil
 	}
 }
 
 // 查询
 func GetUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
-	var body model.User
-	name := c.Query("user_name")
-	result := DB.Where("user_name = ?", name).First(&body)
+	var (
+		body  map[string]interface{}
+		list  []model.User
+		total int64
+	)
+	// 获取参数
+	if err := c.ShouldBind(&body); err != nil {
+		return nil, errors.New("参数错误")
+	}
+
+	// 构建查询
+	query := DB.Model(&model.User{})
+
+	// 判断是否启用分页
+	var page, pageSize int
+
+	if p, ok := body["page"].(int); ok {
+		page = p
+	} else if pFloat, ok := body["page"].(float64); ok {
+		page = int(pFloat)
+	}
+
+	if pSize, ok := body["page_size"].(int); ok {
+		pageSize = pSize
+	} else if pSizeFloat, ok := body["page_size"].(float64); ok {
+		pageSize = int(pSizeFloat)
+	}
+
+	if page > 0 && pageSize > 0 {
+
+		// 添加查询条件
+		conditions := map[string]interface{}{}
+		for key, value := range body {
+			if key == "page" || key == "page_size" {
+				continue
+			}
+			conditions[key] = value
+		}
+		for key, value := range conditions {
+			query = query.Where(key+" = ?", value)
+		}
+
+		// 获取总数
+		if err := query.Count(&total).Error; err != nil {
+			return nil, err
+		}
+
+		// 分页计算
+		offset := (page - 1) * pageSize
+		result := query.Offset(offset).Limit(pageSize).Find(&list)
+
+		if result.Error != nil {
+			return nil, result.Error
+		} else {
+			return map[string]interface{}{
+				"list":      list,
+				"total":     total,
+				"page":      page,
+				"page_size": pageSize,
+			}, nil
+		}
+	}
+	// 查询全部用户
+	result := query.Find(&list)
 	if result.Error != nil {
-		return nil, errors.New("用户不存在")
+		return nil, result.Error
 	} else {
-		return body, nil
+		return list, nil
 	}
 }
 
 // 更新
 func UpdateUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 	// 获取参数
-	var body model.User
+	var (
+		body map[string]interface{}
+		user model.User
+	)
 	if err := c.ShouldBind(&body); err != nil {
 		return nil, errors.New("参数错误")
 	}
 
 	// 判断是否存在
+	if err := DB.First(&model.User{}, body["id"]).Error; err != nil {
+		return nil, errors.New("用户不存在")
+	}
+
+	// 判断参数是否重复
 	searchKey := map[string]interface{}{
-		"user_name": body.UserName,
+		"user_name": user.UserName,
+		"phone":     user.Phone,
 	}
 	if err := utils.CheckUniqueFields(DB, &model.User{}, searchKey); err != nil {
 		return nil, err
 	}
 
-	result := DB.Model(&body).Where("id=?", body.ID).Updates(body)
+	result := DB.Model(&model.User{}).Where("id = ?", body["id"]).Updates(body)
 	if result.Error != nil {
 		return nil, errors.New("更新失败")
 	} else {
-		return body, nil
+		if err := DB.Model(&model.User{}).Where("id = ?", body["id"]).First(&user).Error; err != nil {
+			return nil, errors.New("用户不存在")
+		}
+		return user, nil
 	}
+
 }
 
 // 删除
 func DeleteUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
-	return nil, errors.New("删除失败")
+	// 获取参数
+	var body map[string]interface{}
+	if err := c.ShouldBind(&body); err != nil {
+		return nil, errors.New("参数错误")
+	}
+	// 判断是否存在
+	if err := DB.First(&model.User{}, body["id"]).Error; err != nil {
+		return nil, errors.New("用户不存在")
+	}
+	result := DB.Delete(&model.User{}, body["id"])
+	if result.Error != nil {
+		return nil, errors.New("删除失败")
+	} else {
+		return nil, nil
+	}
 }

@@ -36,8 +36,8 @@ func Routes(r *gin.Engine) {
 		{
 			UserController := new(controller.UserController)
 
-			auth.GET("/user", UserController.GetUser)
-			auth.POST("/user/create", UserController.Create)
+			auth.POST("/user", UserController.GetUser)
+			auth.POST("/user/create", UserController.CreateUser)
 			auth.POST("/user/update", UserController.UpdateUser)
 			auth.POST("/user/delete", UserController.DeleteUser)
 		}

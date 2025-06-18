@@ -12,7 +12,7 @@ type UserController struct {
 }
 
 // 新增
-func (u *UserController) Create(c *gin.Context) {
+func (u *UserController) CreateUser(c *gin.Context) {
 	res, err := service.CreateUser(c, database.DB)
 	if err != nil {
 		utils.GetResponseJson(c, utils.FAIL, err.Error(), nil)
