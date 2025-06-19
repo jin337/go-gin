@@ -27,3 +27,33 @@ type Account struct {
 func (Account) TableName() string {
 	return "accounts"
 }
+
+// 创建前
+func (m *Account) BeforeCreate(tx *gorm.DB) (err error) {
+	return nil
+}
+
+// 创建后
+func (m *Account) AfterCreate(tx *gorm.DB) (err error) {
+	return nil
+}
+
+// 更新前
+func (m *Account) BeforeUpdate(tx *gorm.DB) (err error) {
+	return nil
+}
+
+// 更新后
+func (m *Account) AfterUpdate(tx *gorm.DB) (err error) {
+	return nil
+}
+
+// 删除前
+func (m *Account) BeforeDelete(tx *gorm.DB) error {
+	return nil
+}
+
+// 删除后
+func (m *Account) AfterDelete(tx *gorm.DB) (err error) {
+	return nil
+}

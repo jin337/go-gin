@@ -8,11 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type UserController struct{}
+type AccountController struct{}
 
 // 新增
-func (c *UserController) CreateUser(ctx *gin.Context) {
-	res, err := service.CreateUser(ctx, database.DB)
+func (c *AccountController) CreateAccount(ctx *gin.Context) {
+	res, err := service.CreateAccount(ctx, database.DB)
 	if err != nil {
 		utils.GetResponseJson(ctx, utils.FAIL, err.Error(), nil)
 	} else {
@@ -21,8 +21,8 @@ func (c *UserController) CreateUser(ctx *gin.Context) {
 }
 
 // 查询
-func (c *UserController) GetUser(ctx *gin.Context) {
-	res, err := service.GetUser(ctx, database.DB)
+func (c *AccountController) GetAccount(ctx *gin.Context) {
+	res, err := service.GetAccount(ctx, database.DB)
 	if err != nil {
 		utils.GetResponseJson(ctx, utils.FAIL, err.Error(), nil)
 	} else {
@@ -32,8 +32,8 @@ func (c *UserController) GetUser(ctx *gin.Context) {
 }
 
 // 更新
-func (c *UserController) UpdateUser(ctx *gin.Context) {
-	res, err := service.UpdateUser(ctx, database.DB)
+func (c *AccountController) UpdateAccount(ctx *gin.Context) {
+	res, err := service.UpdateAccount(ctx, database.DB)
 	if err != nil {
 		utils.GetResponseJson(ctx, utils.FAIL, err.Error(), nil)
 	} else {
@@ -42,8 +42,8 @@ func (c *UserController) UpdateUser(ctx *gin.Context) {
 }
 
 // 删除
-func (c *UserController) DeleteUser(ctx *gin.Context) {
-	res, err := service.DeleteUser(ctx, database.DB)
+func (c *AccountController) DeleteAccount(ctx *gin.Context) {
+	res, err := service.DeleteAccount(ctx, database.DB)
 	if err != nil {
 		utils.GetResponseJson(ctx, utils.FAIL, err.Error(), nil)
 	} else {

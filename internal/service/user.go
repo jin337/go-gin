@@ -25,10 +25,10 @@ func ToUserDTO(r *model.User) model.UserDTO {
 }
 
 // 新增
-func CreateUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
+func CreateUser(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 	var body model.User
 	// 获取参数
-	if err := c.ShouldBind(&body); err != nil {
+	if err := ctx.ShouldBind(&body); err != nil {
 		return nil, errors.New("参数错误")
 	}
 	// 在表不存在时自动创建数据库表
@@ -57,7 +57,7 @@ func CreateUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 }
 
 // 查询
-func GetUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
+func GetUser(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 	var (
 		body     map[string]interface{}
 		list     []model.User
@@ -65,7 +65,7 @@ func GetUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 		total    int64
 	)
 	// 获取参数
-	if err := c.ShouldBind(&body); err != nil {
+	if err := ctx.ShouldBind(&body); err != nil {
 		return nil, errors.New("参数错误")
 	}
 	// 构建查询
@@ -120,14 +120,14 @@ func GetUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 	return usersDTO, nil
 }
 
-// 更新
-func UpdateUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
+// 修改
+func UpdateUser(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 	var (
 		body map[string]interface{}
 		user model.User
 	)
 	// 获取参数
-	if err := c.ShouldBind(&body); err != nil {
+	if err := ctx.ShouldBind(&body); err != nil {
 		return nil, errors.New("参数错误")
 	}
 
@@ -157,10 +157,10 @@ func UpdateUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 }
 
 // 删除
-func DeleteUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
+func DeleteUser(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 	var body map[string]interface{}
 	// 获取参数
-	if err := c.ShouldBind(&body); err != nil {
+	if err := ctx.ShouldBind(&body); err != nil {
 		return nil, errors.New("参数错误")
 	}
 	// 判断是否存在

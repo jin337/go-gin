@@ -50,52 +50,52 @@ func hashPassword(password string) string {
 }
 
 // 创建前
-func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+func (m *User) BeforeCreate(tx *gorm.DB) (err error) {
 	fmt.Println("\033[32m创建前执行\033[0m")
 	// 处理逻辑
-	if u.PassWord != "" {
-		u.PassWord = hashPassword(u.PassWord)
+	if m.PassWord != "" {
+		m.PassWord = hashPassword(m.PassWord)
 	}
-	if u.UserName == "" {
+	if m.UserName == "" {
 		return errors.New("用户名不能为空")
 	}
-	if u.PassWord == "" {
+	if m.PassWord == "" {
 		return errors.New("密码不能为空")
 	}
-	if u.Phone == "" {
+	if m.Phone == "" {
 		return errors.New("手机号不能为空")
 	}
 	return nil
 }
 
 // 创建后
-func (u *User) AfterCreate(tx *gorm.DB) (err error) {
+func (m *User) AfterCreate(tx *gorm.DB) (err error) {
 	fmt.Println("\033[32m创建后执行\033[0m")
 	// 固定字段+自增6为账号
-	loginName := fmt.Sprintf("%s%06d", "CN", u.ID)
-	u.LoginName = &loginName
+	loginName := fmt.Sprintf("%s%06d", "CN", m.ID)
+	m.LoginName = &loginName
 	return nil
 }
 
 // 更新前
-func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
+func (m *User) BeforeUpdate(tx *gorm.DB) (err error) {
 	fmt.Println("\033[32m更新前执行\033[0m")
 	// 处理逻辑
 	if tx.Statement.Changed("Password") {
-		u.PassWord = hashPassword(u.PassWord)
+		m.PassWord = hashPassword(m.PassWord)
 	}
 	if tx.Statement.Changed("IsActive") {
-		if u.IsActive != 0 && u.IsActive != 1 {
+		if m.IsActive != 0 && m.IsActive != 1 {
 			return errors.New("状态必须为 0 或 1")
 		}
 	}
 	if tx.Statement.Changed("Status") {
-		if u.Status != 1 && u.Status != 2 && u.Status != 3 {
+		if m.Status != 1 && m.Status != 2 && m.Status != 3 {
 			return errors.New("状态必须为 1、2 或 3")
 		}
 	}
 	if tx.Statement.Changed("Gender") {
-		if u.Gender != 0 && u.Gender != 1 {
+		if m.Gender != 0 && m.Gender != 1 {
 			return errors.New("性别必须为 0 或 1")
 		}
 	}
@@ -103,7 +103,7 @@ func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
 }
 
 // 删除前
-func (u *User) BeforeDelete(tx *gorm.DB) error {
+func (m *User) BeforeDelete(tx *gorm.DB) error {
 	fmt.Println("\033[32m删除前执行\033[0m")
 	// 处理逻辑
 	return nil
