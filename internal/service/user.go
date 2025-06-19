@@ -14,7 +14,7 @@ func ToUserDTO(r *model.User) model.UserDTO {
 	return model.UserDTO{
 		ID:            r.ID,
 		UserName:      r.UserName,
-		Email:         r.Email,
+		LoginName:     r.LoginName,
 		Phone:         r.Phone,
 		IsActive:      r.IsActive,
 		LoginAttempts: r.LoginAttempts,
@@ -32,7 +32,7 @@ func CreateUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 		return nil, errors.New("参数错误")
 	}
 	// 在表不存在时自动创建数据库表
-	// DB.AutoMigrate(&model.User{})
+	DB.AutoMigrate(&model.User{}, &model.Account{})
 
 	// 判断参数是否重复
 	searchKey := map[string]interface{}{
@@ -46,7 +46,6 @@ func CreateUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 	user := &model.User{
 		UserName: body.UserName,
 		PassWord: body.PassWord,
-		Email:    body.Email,
 		Phone:    body.Phone,
 	}
 	// 插入数据库
@@ -148,7 +147,7 @@ func UpdateUser(c *gin.Context, DB *gorm.DB) (interface{}, error) {
 
 	result := DB.Model(&model.User{}).Where("id = ?", body["id"]).Updates(body)
 	if result.Error != nil {
-		return nil, errors.New("更新失败")
+		return nil, result.Error
 	}
 	if err := DB.Model(&model.User{}).Where("id = ?", body["id"]).First(&user).Error; err != nil {
 		return nil, errors.New("数据不存在")
