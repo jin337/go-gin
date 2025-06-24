@@ -5,13 +5,13 @@ import (
 	"gorm.io/gorm"
 )
 
-// 查询
-func GetAccount(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
+// 新增
+func CreateAccount(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 	return nil, nil
 }
 
-// 新增
-func CreateAccount(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
+// 查询
+func GetAccount(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 	return nil, nil
 }
 

@@ -1,18 +1,25 @@
 package router
 
 import (
+	"go-gin/internal/app/config"
 	"go-gin/internal/controller"
 	"go-gin/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes() *gin.Engine {
+// SetupRoutes 初始化路由并启动服务
+func SetupRoutes(cfg *config.Config) error {
 	router := gin.Default()
-
 	router.SetTrustedProxies([]string{"127.0.0.1"}) // 信任ip
 	Routes(router)
-	return router
+
+	// 启动服务
+	if err := router.Run(cfg.Service.Port); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // SetupRoutes 设置路由
@@ -46,7 +53,6 @@ func Routes(r *gin.Engine) {
 			auth.POST("/account/create", AccountController.CreateAccount)
 			auth.POST("/account/update", AccountController.UpdateAccount)
 			auth.POST("/account/delete", AccountController.DeleteAccount)
-
 		}
 	}
 }
