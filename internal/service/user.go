@@ -88,7 +88,8 @@ func UpdateUser(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 		}
 		return nil, utils.TranslateDBError(err) // 转换错误提示内容
 	}
-	// 更新
+
+	// 数据
 	updateData := map[string]interface{}{
 		"updated_at": time.Now(),
 	}
@@ -104,7 +105,7 @@ func UpdateUser(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 	if req.Status != nil {
 		updateData["status"] = *req.Status
 	}
-
+	// 提交更新
 	result := DB.Model(&item).Updates(updateData)
 	if result.Error != nil {
 		return nil, utils.TranslateDBError(result.Error) // 转换错误提示内容
@@ -113,6 +114,7 @@ func UpdateUser(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 	if err := DB.First(&item, req.ID).Error; err != nil {
 		return nil, utils.TranslateDBError(result.Error) // 转换错误提示内容
 	}
+	// 转换结果
 	res := model.UserRes{
 		ID:        item.ID,
 		UserName:  item.UserName,
@@ -134,6 +136,7 @@ func DeleteUser(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	// 检查用户是否存在
 	var item model.User
 	if err := DB.First(&item, req.ID).Error; err != nil {
@@ -142,6 +145,7 @@ func DeleteUser(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 		}
 		return nil, utils.TranslateDBError(err) // 转换错误提示内容
 	}
+
 	// 删除
 	if err := DB.Delete(&item).Error; err != nil {
 		return nil, utils.TranslateDBError(err)

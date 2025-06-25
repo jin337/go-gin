@@ -45,40 +45,6 @@ func init() {
 	})
 }
 
-// Validator 验证结构体并返回中文错误信息
-func Validator(data interface{}) error {
-	err := validate.Struct(data)
-	if err == nil {
-		return nil
-	}
-	// 类型断言获取验证错误
-	validationErrors, ok := err.(validator.ValidationErrors)
-
-	if !ok {
-		return err
-	}
-
-	// 收集所有错误信息
-	var errMsgs []string
-	for _, e := range validationErrors {
-		errMsgs = append(errMsgs, e.Translate(trans))
-	}
-
-	return &ValidationError{
-		Errors: errMsgs,
-	}
-}
-
-// 合并所有错误信息为一个字符串
-func (e *ValidationError) Error() string {
-	return strings.Join(e.Errors, "; ")
-}
-
-// GetErrors 获取错误列表
-func (e *ValidationError) GetErrors() []string {
-	return e.Errors
-}
-
 // 获取json,并验证类型
 func ValidatorJSON(ctx *gin.Context, data interface{}) error {
 	if err := ctx.ShouldBindJSON(&data); err != nil {
@@ -123,4 +89,38 @@ func OmitNilFields(v *validator.Validate, data interface{}) {
 			}, true)
 		}
 	}
+}
+
+// Validator 验证结构体并返回中文错误信息
+func Validator(data interface{}) error {
+	err := validate.Struct(data)
+	if err == nil {
+		return nil
+	}
+	// 类型断言获取验证错误
+	validationErrors, ok := err.(validator.ValidationErrors)
+
+	if !ok {
+		return err
+	}
+
+	// 收集所有错误信息
+	var errMsgs []string
+	for _, e := range validationErrors {
+		errMsgs = append(errMsgs, e.Translate(trans))
+	}
+
+	return &ValidationError{
+		Errors: errMsgs,
+	}
+}
+
+// 合并所有错误信息为一个字符串
+func (e *ValidationError) Error() string {
+	return strings.Join(e.Errors, "; ")
+}
+
+// GetErrors 获取错误列表
+func (e *ValidationError) GetErrors() []string {
+	return e.Errors
 }
