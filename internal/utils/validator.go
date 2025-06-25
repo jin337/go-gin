@@ -51,9 +51,9 @@ func Validator(data interface{}) error {
 	if err == nil {
 		return nil
 	}
-
 	// 类型断言获取验证错误
 	validationErrors, ok := err.(validator.ValidationErrors)
+
 	if !ok {
 		return err
 	}

@@ -1,8 +1,11 @@
 package service
 
 import (
+	"fmt"
 	"go-gin/internal/model"
 	"go-gin/internal/utils"
+	"math/rand"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -10,13 +13,19 @@ import (
 
 // 新增
 func CreateUser(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
+	// DB.AutoMigrate(&model.User{}, &model.Account{})
+
 	var req model.UserReq
 	err := utils.ValidatorJSON(ctx, &req)
 	if err != nil {
 		return nil, err
 	}
+	// 生成用户登录账号,暂时生成一个随机数
+	rand.Seed(time.Now().UnixNano())
+	loginName := fmt.Sprintf("CRM%06d", rand.Intn(1000000))
+
 	body := &model.User{
-		LoginName: "111",
+		LoginName: loginName,
 		UserName:  req.UserName,
 		PassWord:  req.PassWord,
 		Phone:     req.Phone,

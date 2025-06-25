@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/go-sql-driver/mysql"
@@ -51,22 +52,17 @@ func extractFieldFromKey(errorMsg string) string {
 	keyPart := strings.Split(errorMsg, "for key")[1]
 	keyPart = strings.Trim(keyPart, " '") // 移除引号和空格
 
-	parts := strings.Split(keyPart, ".")
-	if len(parts) != 2 {
-		return "该"
-	}
-	indexName := parts[1]
-
-	// 处理索引名格式（支持常见命名风格）
 	switch {
-	// 情况1：idx_表名_字段名 → 提取最后一个下划线后的内容
-	case strings.HasPrefix(indexName, "idx_"):
-		if lastUnderscore := strings.LastIndex(indexName, "_"); lastUnderscore != -1 {
-			return indexName[lastUnderscore+1:]
+	// 情况1：表名.前缀_表名_字段名 → 字段名
+	case strings.Contains(keyPart, "."):
+		re := regexp.MustCompile(`^[^.]+\.[^_]+_[^_]+_(.+)$`)
+		matches := re.FindStringSubmatch(keyPart)
+		if len(matches) > 1 {
+			return matches[1]
 		}
 	// 情况2：直接是字段名（如 "phone"）
 	default:
-		return indexName
+		return keyPart
 	}
 
 	return "该"
