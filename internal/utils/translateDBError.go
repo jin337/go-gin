@@ -17,7 +17,7 @@ func TranslateDBError(err error) error {
 	switch mysqlErr.Number {
 	case 1062:
 		field := extractFieldFromKey(mysqlErr.Message)
-		return fmt.Errorf("%s数据已存在，请勿重复提交", field)
+		return fmt.Errorf("%s字段数据已存在", field)
 	case 1064:
 		return errors.New("SQL 语法错误，请检查查询语句")
 	case 1146:
@@ -60,7 +60,7 @@ func extractFieldFromKey(errorMsg string) string {
 		if len(matches) > 1 {
 			return matches[1]
 		}
-	// 情况2：直接是字段名（如 "phone"）
+	// 直接返回字段名
 	default:
 		return keyPart
 	}

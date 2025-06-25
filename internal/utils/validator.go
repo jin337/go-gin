@@ -69,6 +69,7 @@ func Validator(data interface{}) error {
 	}
 }
 
+// 合并所有错误信息为一个字符串
 func (e *ValidationError) Error() string {
 	return strings.Join(e.Errors, "; ")
 }
@@ -98,5 +99,28 @@ func ValidatorJSON(ctx *gin.Context, data interface{}) error {
 		}
 		return err
 	}
+	fmt.Printf("data: %+v\n", data)
+	// // 忽略 nil 指针字段
+	OmitNilFields(validate, data)
+	if err := Validator(data); err != nil {
+		return err
+	}
 	return nil
+}
+
+// 动态忽略所有为 nil 的指针字段
+func OmitNilFields(v *validator.Validate, data interface{}) {
+	val := reflect.ValueOf(data).Elem()
+
+	for i := 0; i < val.NumField(); i++ {
+		structField := val.Type().Field(i)
+		field := val.Field(i)
+
+		// 如果字段是指针类型且为 nil，则跳过验证
+		if field.Kind() == reflect.Ptr && field.IsNil() {
+			v.RegisterValidation(structField.Name, func(fl validator.FieldLevel) bool {
+				return true // 跳过校验
+			}, true)
+		}
+	}
 }
