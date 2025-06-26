@@ -41,6 +41,6 @@ func SetupConfig() (*Config, error) {
 		log.Fatalf("解析配置文件失败：%v", err)
 		return nil, err
 	}
-
+	log.Println("初始化配置成功")
 	return &config, nil
 }

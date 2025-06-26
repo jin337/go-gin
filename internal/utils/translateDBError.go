@@ -5,15 +5,31 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"sync"
 
 	"github.com/go-sql-driver/mysql"
 )
+
+// 预编译正则表达式，避免每次调用都重新编译
+var (
+	keyRegex  *regexp.Regexp
+	regexOnce sync.Once
+)
+
+func init() {
+	// 延迟初始化正则表达式
+	regexOnce.Do(func() {
+		keyRegex = regexp.MustCompile(`^[^.]+\.[^_]+_[^_]+_(.+)$`)
+	})
+}
 
 func TranslateDBError(err error) error {
 	var mysqlErr *mysql.MySQLError
 	if !errors.As(err, &mysqlErr) {
 		return err // 非 MySQL 错误，直接返回
 	}
+
+	// 类型判断
 	switch mysqlErr.Number {
 	case 1062:
 		field := extractFieldFromKey(mysqlErr.Message)
@@ -40,28 +56,55 @@ func TranslateDBError(err error) error {
 	case 2002:
 		return errors.New("无法连接数据库，请检查 MySQL 服务")
 	default:
-		return errors.New("数据库操作失败: " + mysqlErr.Message)
+		// 避免每次都创建新字符串
+		return fmt.Errorf("数据库操作失败: %s", mysqlErr.Message)
 	}
 }
 
+// 减少字符串分配
+var stringPool = sync.Pool{
+	New: func() interface{} {
+		return new(strings.Builder)
+	},
+}
+
+// 获取字段名
 func extractFieldFromKey(errorMsg string) string {
+	// 快速检查是否包含关键词，避免不必要的处理
 	if !strings.Contains(errorMsg, "for key") {
 		return "该"
 	}
 
-	keyPart := strings.Split(errorMsg, "for key")[1]
-	keyPart = strings.Trim(keyPart, " '") // 移除引号和空格
+	// 使用 strings.Cut 代替 Split 提高性能
+	_, after, found := strings.Cut(errorMsg, "for key")
+	if !found {
+		return "该"
+	}
 
-	switch {
-	// 情况1：表名.前缀_表名_字段名 → 字段名
-	case strings.Contains(keyPart, "."):
-		re := regexp.MustCompile(`^[^.]+\.[^_]+_[^_]+_(.+)$`)
-		matches := re.FindStringSubmatch(keyPart)
+	// 从池中获取 Builder 减少内存分配
+	builder := stringPool.Get().(*strings.Builder)
+	defer func() {
+		builder.Reset()
+		stringPool.Put(builder)
+	}()
+
+	// 直接写入 Builder 避免中间字符串
+	for _, r := range after {
+		if r == '\'' || r == ' ' {
+			continue
+		}
+		builder.WriteRune(r)
+	}
+	keyPart := builder.String()
+
+	// 表名.前缀_表名_字段名 → 字段名
+	if strings.Contains(keyPart, ".") {
+		matches := keyRegex.FindStringSubmatch(keyPart)
 		if len(matches) > 1 {
 			return matches[1]
 		}
-	// 直接返回字段名
-	default:
+	} else {
+		// 直接返回字段名
 		return keyPart
 	}
 

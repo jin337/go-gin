@@ -12,7 +12,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// DB.AutoMigrate(&model.User{})
 // 新增
 func CreateUser(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 	// 解析校验参数
