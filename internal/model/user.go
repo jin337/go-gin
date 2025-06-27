@@ -10,7 +10,6 @@ import (
 type User struct {
 	ID        uint           `json:"id" gorm:"primarykey;comment:唯一标识符"`
 	UserName  string         `json:"user_name" validate:"required,min=3,max=20" gorm:"comment:昵称"`
-	PassWord  string         `json:"pass_word" validate:"required,min=6" gorm:"comment:密码"`
 	Phone     string         `json:"phone" validate:"required,len=11,numeric" gorm:"unique;comment:手机号"`
 	Gender    *int           `json:"gender" validate:"required,oneof=0 1" gorm:"comment:性别 (0: 女, 1: 男)"`
 	Status    int            `json:"status" validate:"required,oneof=1 2 3" gorm:"comment:状态 (1: 正式, 2: 试用期, 3: 离职)"`
@@ -51,7 +50,7 @@ type UserUpdateReq struct {
 	Phone     *string `json:"phone" validate:"omitempty,len=11,numeric" gorm:"unique"`
 	Gender    *int    `json:"gender" validate:"omitempty,oneof=0 1"`
 	Status    *int    `json:"status" validate:"omitempty,oneof=1 2 3"`
-	AccountID *int    `json:"account_id" validate:"omitempty"`
+	AccountID *int    `json:"account_id" validate:"omitempty"` //账号ID
 }
 
 // 请求参数-查询
