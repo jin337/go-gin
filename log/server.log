@@ -1,1 +1,7 @@
-2025/07/01 13:59:54 | 200 | 7.9353ms | 127.0.0.1 | POST /api/v1/user {"page":1,"page_size":10}
+2025/07/01 15:06:46 | 200 | 8.6466ms | 127.0.0.1 | POST /api/v1/user {"page":1,"page_size":10}
+2025/07/01 15:08:39 | 200 | 7.0001ms | 127.0.0.1 | POST /api/v1/user {"page":1,"page_size":10}
+2025/07/01 15:09:05 | 200 | 39.146ms | 127.0.0.1 | POST /api/v1/user {"page":1,"page_size":10}
+2025/07/01 15:09:38 | 200 | 44.0384ms | 127.0.0.1 | POST /api/v1/user {"page":1,"page_size":10}
+2025/07/01 15:11:36 | 200 | 9.052ms | 127.0.0.1 | POST /api/v1/user {"page":1,"page_size":10}
+2025/07/01 15:18:07 | 200 | 9.5835ms | 127.0.0.1 | POST /api/v1/user {"page":1,"page_size":10}
+2025/07/01 15:19:02 | 200 | 10.5499ms | 127.0.0.1 | POST /api/v1/user {"page":1,"page_size":10}

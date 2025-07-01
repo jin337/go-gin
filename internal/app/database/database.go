@@ -2,20 +2,13 @@ package database
 
 import (
 	"go-gin/internal/app/config"
+	"go-gin/internal/app/logger"
 	"log"
 	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
-
-/*
-	位置：log/sql.log
-
-	控制台和日志文件：
-	2025/06/30 11:02:51 [3.505ms] [rows:3] SELECT * FROM `users` WHERE `users`.`deleted_at` IS NULL LIMIT 10
-*/
 
 // 全局变量，用于存储数据库连接
 var DB *gorm.DB
@@ -24,13 +17,16 @@ var DB *gorm.DB
 func SetupDB(cfg *config.Config) error {
 	var err error
 
-	DB, err = gorm.Open(mysql.Open(cfg.Database.Link), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
+	// 自定义mysql日志
+	sqlLog, err := logger.SetMySqlLogger()
 	if err != nil {
-		log.Fatalf("数据库初始化失败：%v", err)
+		log.Fatalf("创建日志器失败：%v", err)
 		return err
 	}
+
+	DB, err = gorm.Open(mysql.Open(cfg.Database.Link), &gorm.Config{
+		Logger: sqlLog,
+	})
 	if err != nil {
 		log.Fatalf("数据库初始化失败：%v", err)
 		return err
