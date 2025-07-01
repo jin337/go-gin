@@ -3,6 +3,7 @@ package main
 import (
 	"go-gin/internal/app/config"
 	"go-gin/internal/app/database"
+	"go-gin/internal/app/logger"
 	"go-gin/internal/router"
 	"log"
 
@@ -10,6 +11,11 @@ import (
 )
 
 func main() {
+	// 创建日志文件
+	if err := logger.SetupLog(); err != nil {
+		log.Fatalf("初始化日志失败: %v", err)
+	}
+
 	// 初始化配置
 	cfg, err := config.SetupConfig()
 	if err != nil {

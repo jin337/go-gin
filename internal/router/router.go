@@ -10,7 +10,8 @@ import (
 
 // SetupRoutes 初始化路由并启动服务
 func SetupRoutes(cfg *config.Config) error {
-	router := gin.Default()
+	router := gin.New()
+	router.Use(middleware.LoggerMiddleware())
 	router.SetTrustedProxies([]string{"127.0.0.1"}) // 信任ip
 	Routes(router)
 
