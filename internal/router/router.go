@@ -9,13 +9,16 @@ import (
 )
 
 // SetupRoutes 初始化路由并启动服务
-func SetupRoutes(cfg *config.Config) error {
+func SetupRoutes() error {
 	router := gin.New()
-	router.Use(middleware.LoggerMiddleware())
+
+	router.Use(middleware.LoggerMiddleware())       // 中间件-日志
 	router.SetTrustedProxies([]string{"127.0.0.1"}) // 信任ip
+
 	Routes(router)
 
 	// 启动服务
+	cfg := config.GetGlobalConfig()
 	if err := router.Run(cfg.Service.Port); err != nil {
 		return err
 	}
@@ -40,7 +43,7 @@ func Routes(r *gin.Engine) {
 
 		// 监控权限
 		auth := v1.Group("/")
-		auth.Use(middleware.AuthMiddleware()) // 使用校验身份中间件
+		auth.Use(middleware.AuthMiddleware()) // 中间件-份校验
 		{
 			UserController := new(controller.UserController)
 

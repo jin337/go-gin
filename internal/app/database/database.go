@@ -14,8 +14,9 @@ import (
 var DB *gorm.DB
 
 // 初始化数据库
-func SetupDB(cfg *config.Config) error {
+func SetupDB() error {
 	var err error
+	cfg := config.GetGlobalConfig()
 
 	// 自定义mysql日志
 	sqlLog, err := logger.SetMySqlLogger()
@@ -41,6 +42,6 @@ func SetupDB(cfg *config.Config) error {
 	sqlDB.SetMaxOpenConns(cfg.Database.MaxOpen)                       // 设置最大打开连接数
 	sqlDB.SetConnMaxLifetime(time.Duration(cfg.Database.MaxLifeTime)) // 设置连接可复用的最大时间
 
-	log.Println("数据库连接成功")
+	log.Printf("数据库连接成功")
 	return nil
 }

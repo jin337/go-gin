@@ -84,6 +84,7 @@ func getColorByLatency(latency time.Duration) string {
 	}
 }
 
+// 日志中间件
 func LoggerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
@@ -160,9 +161,11 @@ func LoggerMiddleware() gin.HandlerFunc {
 
 		// 打印到控制台
 		fmt.Println(consoleLogLine)
+		fmt.Println() // 为了美观，添加额外的换行
 
 		// 输出到日志文件
-		file, err := os.OpenFile("log/server.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
+		const dirName = "log"
+		file, err := os.OpenFile(dirName+"/server.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
 		if err != nil {
 			fmt.Println("打开日志文件时出错:", err)
 			return

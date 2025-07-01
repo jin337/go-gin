@@ -17,20 +17,20 @@ func main() {
 	}
 
 	// 初始化配置
-	cfg, err := config.SetupConfig()
-	if err != nil {
+	if err := config.SetupConfig(); err != nil {
 		log.Fatalf("初始化配置失败: %v", err)
 	}
 
 	// 初始化数据库
-	if err := database.SetupDB(cfg); err != nil {
+	if err := database.SetupDB(); err != nil {
 		log.Fatalf("数据库配置失败: %v", err)
 	}
-	// 设置Gin模式:DebugMode/ReleaseMode
+
+	// 设置Gin模式
 	gin.SetMode(gin.ReleaseMode)
 
 	// 初始化服务
-	if err := router.SetupRoutes(cfg); err != nil {
+	if err := router.SetupRoutes(); err != nil {
 		log.Fatalf("启动服务失败: %v", err)
 	}
 }
