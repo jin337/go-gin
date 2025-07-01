@@ -7,6 +7,15 @@ import (
 	"github.com/spf13/viper"
 )
 
+// 设置默认值
+var defaultConfig = map[string]interface{}{
+	"Service.port":         "8080",
+	"Database.maxIdle":     10,
+	"Database.maxOpen":     100,
+	"Database.maxLifeTime": 30,
+	"Log.dirName":          "log",
+}
+
 // 定义配置结构体
 type Config struct {
 	Service  ServiceConfig  `yaml:"Service" mapstructure:"Service"`
@@ -42,6 +51,10 @@ func SetupConfig() error {
 	viper.SetConfigName("config") // 配置文件名（不带扩展名）
 	viper.SetConfigType("yaml")   // 配置文件类型
 	viper.AddConfigPath("config") // 路径
+
+	for k, v := range defaultConfig {
+		viper.SetDefault(k, v)
+	}
 
 	// 读取配置文件
 	if err := viper.ReadInConfig(); err != nil {

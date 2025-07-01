@@ -4,6 +4,7 @@ import (
 	"go-gin/internal/app/config"
 	"go-gin/internal/controller"
 	"go-gin/internal/middleware"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,11 +19,11 @@ func SetupRoutes() error {
 	Routes(router)
 
 	// 启动服务
-	cfg := config.GetGlobalConfig()
-	if err := router.Run(cfg.Service.Port); err != nil {
+	Port := config.GetGlobalConfig().Service.Port
+	log.Printf("运行端口:%s", Port)
+	if err := router.Run(":" + Port); err != nil {
 		return err
 	}
-
 	return nil
 }
 

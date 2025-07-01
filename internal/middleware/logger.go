@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"go-gin/internal/app/config"
 	"io"
 	"os"
 	"time"
@@ -164,8 +165,10 @@ func LoggerMiddleware() gin.HandlerFunc {
 		fmt.Println() // 为了美观，添加额外的换行
 
 		// 输出到日志文件
-		const dirName = "log"
-		file, err := os.OpenFile(dirName+"/server.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
+		dirName := config.GetGlobalConfig().Log.DirName
+		logPath := dirName + "/server.log"
+
+		file, err := os.OpenFile(logPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
 		if err != nil {
 			fmt.Println("打开日志文件时出错:", err)
 			return

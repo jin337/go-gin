@@ -3,6 +3,7 @@ package logger
 import (
 	"context"
 	"fmt"
+	"go-gin/internal/app/config"
 	"io"
 	"log"
 	"os"
@@ -30,9 +31,8 @@ func SetupLog() error {
 	if logInitialized {
 		return nil
 	}
-
-	const dirName = "log"
-	const logPath = dirName + "/run.log"
+	dirName := config.GetGlobalConfig().Log.DirName
+	logPath := dirName + "/run.log"
 
 	// 检查log目录是否存在，如果不存在则创建
 	if _, err := os.Stat(dirName); os.IsNotExist(err) {
@@ -94,8 +94,8 @@ const (
 
 // 设置mysql日志
 func SetMySqlLogger() (logger.Interface, error) {
-	const dirName = "log"
-	const logPath = dirName + "/mysql.log"
+	dirName := config.GetGlobalConfig().Log.DirName
+	logPath := dirName + "/mysql.log"
 
 	file, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {

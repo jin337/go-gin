@@ -1,5 +1,5 @@
 Service:
-  port: :8080
+  port: 8090
 
 Database:
   link: 'root:root@tcp(127.0.0.1:3306)/personal_example?charset=utf8mb4&parseTime=True&loc=Local'

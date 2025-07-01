@@ -11,14 +11,14 @@ import (
 )
 
 func main() {
-	// 创建日志文件
-	if err := logger.SetupLog(); err != nil {
-		log.Fatalf("初始化日志失败: %v", err)
-	}
-
 	// 初始化配置
 	if err := config.SetupConfig(); err != nil {
 		log.Fatalf("初始化配置失败: %v", err)
+	}
+
+	// 创建日志文件
+	if err := logger.SetupLog(); err != nil {
+		log.Fatalf("初始化日志失败: %v", err)
 	}
 
 	// 初始化数据库
