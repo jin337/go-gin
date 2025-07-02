@@ -14,7 +14,7 @@ import (
 var DB *gorm.DB
 
 // 初始化数据库
-func SetupDB() error {
+func SetupDB() (*gorm.DB, error) {
 	var err error
 	Database := config.GetGlobalConfig().Database
 
@@ -22,7 +22,7 @@ func SetupDB() error {
 	sqlLog, err := logger.SetMySqlLogger()
 	if err != nil {
 		log.Fatalf("创建日志器失败：%v", err)
-		return err
+		return nil, err
 	}
 
 	DB, err = gorm.Open(mysql.Open(Database.Link), &gorm.Config{
@@ -30,18 +30,18 @@ func SetupDB() error {
 	})
 	if err != nil {
 		log.Fatalf("数据库初始化失败：%v", err)
-		return err
+		return nil, err
 	}
 
 	sqlDB, err := DB.DB()
 	if err != nil {
 		log.Fatalf("数据库连接失败：%v", err)
-		return err
+		return nil, err
 	}
 	sqlDB.SetMaxIdleConns(Database.MaxIdle)                       // 设置最大空闲连接数
 	sqlDB.SetMaxOpenConns(Database.MaxOpen)                       // 设置最大打开连接数
 	sqlDB.SetConnMaxLifetime(time.Duration(Database.MaxLifeTime)) // 设置连接可复用的最大时间
 
 	log.Printf("数据库连接成功")
-	return nil
+	return DB, nil
 }

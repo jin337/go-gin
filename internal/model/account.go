@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// 表结构
 type Account struct {
 	UserID uint `json:"user_id" gorm:"comment:用户ID;default:NULL"`
 

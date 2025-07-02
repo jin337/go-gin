@@ -1,9 +1,11 @@
 package main
 
 import (
+	"flag"
 	"go-gin/internal/app/config"
 	"go-gin/internal/app/database"
 	"go-gin/internal/app/logger"
+	"go-gin/internal/model"
 	"go-gin/internal/router"
 	"log"
 
@@ -11,8 +13,11 @@ import (
 )
 
 func main() {
+	// 定义命令行参数：参数名，默认值，参数描述
+	env := flag.String("env", "dev", "构建环境")
+	flag.Parse()
 	// 初始化配置
-	if err := config.SetupConfig(); err != nil {
+	if err := config.SetupConfig(*env); err != nil {
 		log.Fatalf("初始化配置失败: %v", err)
 	}
 
@@ -22,8 +27,18 @@ func main() {
 	}
 
 	// 初始化数据库
-	if err := database.SetupDB(); err != nil {
+	db, err := database.SetupDB()
+	if err != nil {
 		log.Fatalf("数据库配置失败: %v", err)
+	}
+
+	// 自动创建或更新表和字段
+	if config.GetGlobalConfig().Database.MigrateTables {
+		log.Println("执行表结构迁移...")
+		db.AutoMigrate(
+			&model.User{},
+			&model.Account{},
+		)
 	}
 
 	// 设置Gin模式

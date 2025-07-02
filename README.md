@@ -40,8 +40,14 @@ go-gin
 └─main.go
 ```
 
-### 迁移表
+### 启动
 
 ```
-DB.AutoMigrate(&model.User{}, &model.Account{})
+go run main.go -env=dev
+```
+
+### 构建
+
+```
+go build -ldflags "-X 'main.buildEnv=pro'" -o go-gin main.go
 ```

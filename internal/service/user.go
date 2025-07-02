@@ -194,7 +194,7 @@ func UpdateUser(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 			var existingAccount model.Account
 			// 检查新账号是否已被其他用户绑定
 			if err := tx.Where("id = ? AND user_id IS NOT NULL AND user_id != ?", req.AccountID, item.ID).
-				First(&existingAccount).Error; err != nil {
+				First(&existingAccount).Error; err == nil {
 				if !errors.Is(err, gorm.ErrRecordNotFound) {
 					return errors.New("该账号已被其他用户绑定")
 				}

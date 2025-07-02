@@ -1,0 +1,15 @@
+# 服务
+Service:
+  port: 8090 # 服务端口
+
+# 数据库
+Database:
+  link: 'root:root@tcp(127.0.0.1:3306)/personal_example?charset=utf8mb4&parseTime=True&loc=Local'
+  maxIdle: 10 # 最大空闲连接数
+  maxOpen: 100 # 最大打开连接数
+  maxLifeTime: 30 # 秒
+  migrateTables: false # 是否自动迁移表结构
+
+# 日志
+Log:
+  dirName: log # 日志目录

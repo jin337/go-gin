@@ -9,11 +9,12 @@ import (
 
 // 设置默认值
 var defaultConfig = map[string]interface{}{
-	"Service.port":         "8080",
-	"Database.maxIdle":     10,
-	"Database.maxOpen":     100,
-	"Database.maxLifeTime": 30,
-	"Log.dirName":          "log",
+	"Service.port":           "8080",
+	"Database.maxIdle":       10,
+	"Database.maxOpen":       100,
+	"Database.maxLifeTime":   30,
+	"Database.migrateTables": true,
+	"Log.dirName":            "log",
 }
 
 // 定义配置结构体
@@ -30,10 +31,11 @@ type ServiceConfig struct {
 
 // 数据库
 type DatabaseConfig struct {
-	Link        string `yaml:"link" mapstructure:"link"`
-	MaxIdle     int    `yaml:"maxIdle" mapstructure:"maxIdle"`
-	MaxOpen     int    `yaml:"maxOpen" mapstructure:"maxOpen"`
-	MaxLifeTime int    `yaml:"maxLifeTime" mapstructure:"maxLifeTime"`
+	Link          string `yaml:"link" mapstructure:"link"`
+	MaxIdle       int    `yaml:"maxIdle" mapstructure:"maxIdle"`
+	MaxOpen       int    `yaml:"maxOpen" mapstructure:"maxOpen"`
+	MaxLifeTime   int    `yaml:"maxLifeTime" mapstructure:"maxLifeTime"`
+	MigrateTables bool   `yaml:"migrateTables" mapstructure:"migrateTables"`
 }
 
 // 日志
@@ -47,11 +49,22 @@ var (
 )
 
 // 初始化 viper 并加载配置文件
-func SetupConfig() error {
-	viper.SetConfigName("config") // 配置文件名（不带扩展名）
+func SetupConfig(env string) error {
+	log.Printf("当前环境：%v", env)
+	// 配置文件名
+	switch env {
+	case "dev":
+		viper.SetConfigName("config.dev")
+	case "pro":
+		viper.SetConfigName("config.pro")
+	default:
+		viper.SetConfigName("config.dev")
+	}
+
 	viper.SetConfigType("yaml")   // 配置文件类型
 	viper.AddConfigPath("config") // 路径
 
+	// 设置默认值
 	for k, v := range defaultConfig {
 		viper.SetDefault(k, v)
 	}
