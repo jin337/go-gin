@@ -168,6 +168,7 @@ func LoggerMiddleware() gin.HandlerFunc {
 		dirName := config.GetGlobalConfig().Log.DirName
 		logPath := dirName + "/server.log"
 
+		// 创建日志文件
 		file, err := os.OpenFile(logPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
 		if err != nil {
 			fmt.Println("打开日志文件时出错:", err)

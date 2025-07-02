@@ -24,7 +24,7 @@ func SetupDB() (*gorm.DB, error) {
 		log.Fatalf("创建日志器失败：%v", err)
 		return nil, err
 	}
-
+	// 创建数据库连接
 	DB, err = gorm.Open(mysql.Open(Database.Link), &gorm.Config{
 		Logger: sqlLog,
 	})
@@ -33,6 +33,7 @@ func SetupDB() (*gorm.DB, error) {
 		return nil, err
 	}
 
+	// 设置数据库连接参数
 	sqlDB, err := DB.DB()
 	if err != nil {
 		log.Fatalf("数据库连接失败：%v", err)
