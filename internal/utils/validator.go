@@ -66,7 +66,7 @@ func initializeValidator() {
 }
 
 // ValidatorJSON 获取并验证JSON数据
-func ValidatorJSON(ctx *gin.Context, obj interface{}) error {
+func ValidatorJSON(ctx *gin.Context, data interface{}) error {
 	// 读取原始 body
 	bodyBytes, _ := io.ReadAll(ctx.Request.Body)
 	ctx.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes)) // 重新设置 body
@@ -74,22 +74,22 @@ func ValidatorJSON(ctx *gin.Context, obj interface{}) error {
 	decoder := json.NewDecoder(bytes.NewReader(bodyBytes))
 	decoder.DisallowUnknownFields()
 
-	if err := decoder.Decode(obj); err != nil {
+	if err := decoder.Decode(data); err != nil {
 		return errors.New("包含非法或未知字段")
 	}
 
 	// 确保data是指针类型
-	if reflect.TypeOf(obj).Kind() != reflect.Ptr {
+	if reflect.TypeOf(data).Kind() != reflect.Ptr {
 		return errors.New("数据必须是指针")
 	}
 
 	// 绑定JSON数据
-	if err := ctx.ShouldBindJSON(obj); err != nil {
+	if err := ctx.ShouldBindJSON(data); err != nil {
 		return handleBindError(err)
 	}
 
 	// 验证数据结构
-	if err := Validator(obj); err != nil {
+	if err := Validator(data); err != nil {
 		return err
 	}
 	return nil

@@ -39,15 +39,14 @@ func Routes(r *gin.Engine) {
 	{
 		common := v1.Group("/common")
 		{
-			common.GET("/login", CommonController.Login)
+			common.POST("/login", CommonController.Login)
+			common.POST("/logout", CommonController.Logout)
 		}
 
 		// 监控权限
-		auth := v1.Group("/")
-		auth.Use(middleware.AuthMiddleware()) // 中间件-份校验
+		auth := v1.Group("/", middleware.AuthMiddleware())
 		{
 			UserController := new(controller.UserController)
-
 			auth.POST("/user", UserController.GetUser)
 			auth.POST("/user/create", UserController.CreateUser)
 			auth.POST("/user/update", UserController.UpdateUser)

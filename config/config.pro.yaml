@@ -1,6 +1,7 @@
 # 服务
 Service:
   port: 8080 # 服务端口
+  JwtSecret: 'aJ7j9K2fLm5nP8qR3sT6vWxYz4bC1dE0gH' # 密钥
 
 # 数据库
 Database:

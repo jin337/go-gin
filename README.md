@@ -6,6 +6,7 @@
 - gorm：`gorm.io/gorm`
 - mysql：`gorm.io/driver/mysql`
 - viper：`github.com/spf13/viper`
+- jwt：`github.com/golang-jwt/jwt/v4`
 - air：`github.com/air-verse/air`
 
 ## 目录
@@ -51,4 +52,3 @@ go run main.go -env=dev
 ```
 go build -ldflags "-X 'main.buildEnv=pro'" -o go-gin main.go
 ```
-

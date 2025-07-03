@@ -99,14 +99,15 @@ func GetAccount(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 	var res []model.AccountRes
 	for _, item := range list {
 		res = append(res, model.AccountRes{
-			ID:        item.ID,
-			UserID:    item.UserID,
-			LoginName: item.LoginName,
-			UserName:  item.UserName,
-			Phone:     item.Phone,
-			IsActive:  item.IsActive,
-			CreatedAt: item.CreatedAt,
-			UpdatedAt: item.UpdatedAt,
+			ID:          item.ID,
+			UserID:      item.UserID,
+			LoginName:   item.LoginName,
+			UserName:    item.UserName,
+			Phone:       item.Phone,
+			IsActive:    item.IsActive,
+			CreatedAt:   item.CreatedAt,
+			UpdatedAt:   item.UpdatedAt,
+			LastLoginAt: item.LastLoginAt,
 		})
 	}
 

@@ -10,6 +10,7 @@ import (
 // 设置默认值
 var defaultConfig = map[string]interface{}{
 	"Service.port":           "8080",
+	"Service.TokenSecret":    "123456",
 	"Database.maxIdle":       10,
 	"Database.maxOpen":       100,
 	"Database.maxLifeTime":   30,
@@ -26,7 +27,8 @@ type Config struct {
 
 // 服务
 type ServiceConfig struct {
-	Port string `yaml:"port" mapstructure:"port"`
+	Port        string `yaml:"port" mapstructure:"port"`
+	TokenSecret string `yaml:"tokenSecret" mapstructure:"tokenSecret"`
 }
 
 // 数据库

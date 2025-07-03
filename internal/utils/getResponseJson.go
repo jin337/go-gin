@@ -7,6 +7,7 @@ const (
 	FAIL        = 400
 	TOKEN_ERROR = 401
 	NOT_FOUND   = 404
+	SERVER_BUSY = 503
 )
 
 type ResponseJson struct {

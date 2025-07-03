@@ -21,7 +21,15 @@ func (c *CommonController) Login(ctx *gin.Context) {
 	if err != nil {
 		utils.GetResponseJson(ctx, utils.FAIL, err.Error(), nil)
 	} else {
-
 		utils.GetResponseJson(ctx, utils.SUCCESS, "登录成功", res)
+	}
+}
+// 退出
+func (c *CommonController) Logout(ctx *gin.Context) {
+	res, err := service.Logout(ctx, database.DB)
+	if err != nil {
+		utils.GetResponseJson(ctx, utils.FAIL, err.Error(), nil)
+	} else {
+		utils.GetResponseJson(ctx, utils.SUCCESS, "退出成功", res)
 	}
 }

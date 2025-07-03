@@ -22,13 +22,13 @@ type User struct {
 
 // 响应字段
 type UserRes struct {
-	ID          uint       `json:"id" gorm:"primarykey"`
-	LoginName   string     `json:"login_name" validate:"required,max=20" gorm:"unique"`
-	UserName    string     `json:"user_name" validate:"required,min=3,max=20"`
-	Phone       string     `json:"phone" validate:"required,len=11,numeric" gorm:"unique"`
-	IsActive    *int       `json:"is_active" validate:"required,oneof=0 1"`
-	Gender      *int       `json:"gender" validate:"required,oneof=0 1"`
-	Status      int        `json:"status" validate:"required,oneof=1 2 3"`
+	ID          uint       `json:"id"`
+	LoginName   string     `json:"login_name" `
+	UserName    string     `json:"user_name"`
+	Phone       string     `json:"phone"`
+	IsActive    *int       `json:"is_active"`
+	Gender      *int       `json:"gender"`
+	Status      int        `json:"status"`
 	LastLoginAt *time.Time `json:"last_login_at"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
