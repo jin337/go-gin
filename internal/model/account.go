@@ -22,7 +22,7 @@ type Account struct {
 	UpdatedAt time.Time      `json:"updated_at" gorm:"comment:更新时间"`
 	DeletedAt gorm.DeletedAt `json:"deleted_at" gorm:"index;comment:软删除时间"`
 
-	TokenVersion int
+	CurrentToken string `json:"current_token" gorm:"comment:当前token"`
 }
 
 // 响应字段

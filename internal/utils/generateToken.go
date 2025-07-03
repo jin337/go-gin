@@ -22,6 +22,7 @@ func GenerateToken(userID uint, duration time.Duration) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(expirationTime), // 过期时间
 			IssuedAt:  jwt.NewNumericDate(time.Now()),     // 签发时间
 			NotBefore: jwt.NewNumericDate(time.Now()),     // 生效时间
+			Issuer:    "go-gin",                           // 服务签发来源
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

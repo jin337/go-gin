@@ -43,6 +43,8 @@ func Login(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 		account model.Account
 		user    model.User
 	)
+	var token string
+
 	err := DB.Transaction(func(tx *gorm.DB) error {
 		// 查询用户是否存在
 		if err := tx.Model(&account).Where("login_name = ?", req.LoginName).First(&account).Error; err != nil {
@@ -59,10 +61,30 @@ func Login(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 		if err := tx.Model(&user).Preload("Account").Where("id = ?", account.UserID).First(&user).Error; err != nil {
 			return err
 		}
-		// 更新最后登录时间
-		now := time.Now()
-		if err := tx.Model(&account).Update("last_login_at", &now).Error; err != nil {
+
+		oldToken := account.CurrentToken
+		// 更新token
+		generatedToken, err := utils.GenerateToken(user.ID, 1*60) // 生成token有效期:1小时
+		if err != nil {
 			return err
+		}
+		token = generatedToken
+		// 更新最后登录时间和当前token
+		now := time.Now()
+		updates := map[string]interface{}{
+			"last_login_at": &now,
+			"current_token": token,
+		}
+		if err := tx.Model(&account).Updates(updates).Error; err != nil {
+			return err
+		}
+
+		// 将旧 Token 加入黑名单
+		if oldToken != "" {
+			blacklistedToken := model.BlacklistedToken{
+				Token: oldToken,
+			}
+			tx.Create(&blacklistedToken)
 		}
 
 		return nil
@@ -70,12 +92,6 @@ func Login(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 
 	if err != nil {
 		return nil, utils.TranslateDBError(err) // 转换错误提示内容
-	}
-
-	// 生成token
-	token, err := utils.GenerateToken(user.ID, 1*60) // 生成token有效期:1小时
-	if err != nil {
-		return nil, err
 	}
 
 	return UserRes{
@@ -101,8 +117,7 @@ func Logout(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 	}
 
 	blacklistedToken := model.BlacklistedToken{
-		Token:     authHeader,
-		ExpiresAt: time.Now().Add(24 * time.Hour),
+		Token: authHeader,
 	}
 	if err := DB.Create(&blacklistedToken).Error; err != nil {
 		return nil, utils.TranslateDBError(err) // 转换错误提示内容
