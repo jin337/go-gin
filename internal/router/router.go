@@ -11,7 +11,7 @@ import (
 
 // SetupRoutes 初始化路由并启动服务
 func SetupRoutes() error {
-	r := gin.Default()
+	r := gin.New()
 
 	r.Use(middleware.LoggerMiddleware())       // 中间件-日志
 	r.SetTrustedProxies([]string{"127.0.0.1"}) // 信任ip
