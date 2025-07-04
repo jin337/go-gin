@@ -7,6 +7,7 @@ import (
 	"go-gin/internal/app/logger"
 	"go-gin/internal/model"
 	"go-gin/internal/router"
+	"go-gin/internal/task"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -31,6 +32,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("数据库配置失败: %v", err)
 	}
+
+	// 启动所有定时任务
+	task.StartAllTasks(db)
 
 	// 自动创建或更新表和字段
 	if config.GetGlobalConfig().Database.MigrateTables {

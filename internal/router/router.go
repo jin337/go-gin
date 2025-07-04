@@ -11,24 +11,22 @@ import (
 
 // SetupRoutes 初始化路由并启动服务
 func SetupRoutes() error {
-	router := gin.New()
+	r := gin.Default()
 
-	router.Use(middleware.LoggerMiddleware())       // 中间件-日志
-	router.SetTrustedProxies([]string{"127.0.0.1"}) // 信任ip
+	r.Use(middleware.LoggerMiddleware())       // 中间件-日志
+	r.SetTrustedProxies([]string{"127.0.0.1"}) // 信任ip
 
-	Routes(router)
+	// 注册 API 路由
+	RegisterAPIRoutes(r)
 
 	// 启动服务
 	Port := config.GetGlobalConfig().Service.Port
 	log.Printf("运行端口:%s", Port)
-	if err := router.Run(":" + Port); err != nil {
-		return err
-	}
-	return nil
+	return r.Run(":" + Port)
 }
 
 // SetupRoutes 设置路由
-func Routes(r *gin.Engine) {
+func RegisterAPIRoutes(r *gin.Engine) {
 	CommonController := new(controller.CommonController)
 
 	// 未匹配到任何路由
