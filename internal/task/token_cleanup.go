@@ -10,7 +10,7 @@ import (
 // 每天检查是否为每月第一天，并清理 BlacklistedToken 表
 func CleanupBlacklistedToken(db *gorm.DB) {
 	go func() {
-		ticker := time.NewTicker(24 * time.Hour) // 设定触发间隔
+		ticker := time.NewTicker(7 * 24 * time.Hour) // 设定触发间隔：1周
 		defer ticker.Stop()
 
 		for range ticker.C {

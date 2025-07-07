@@ -21,7 +21,7 @@ func (c *UserController) CreateUser(ctx *gin.Context) {
 }
 
 // 查询
-func (c *UserController) GetUser(ctx *gin.Context) {
+func (c *UserController) GetUserList(ctx *gin.Context) {
 	res, err := service.GetUser(ctx, database.DB)
 	if err != nil {
 		utils.GetResponseJson(ctx, utils.FAIL, err.Error(), nil)

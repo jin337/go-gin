@@ -8,11 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type AccountController struct{}
+type DepartmentController struct{}
 
 // 新增
-func (c *AccountController) CreateAccount(ctx *gin.Context) {
-	res, err := service.CreateAccount(ctx, database.DB)
+func (c *DepartmentController) CreateDepartment(ctx *gin.Context) {
+	res, err := service.CreateDepartment(ctx, database.DB)
 	if err != nil {
 		utils.GetResponseJson(ctx, utils.FAIL, err.Error(), nil)
 	} else {
@@ -21,8 +21,8 @@ func (c *AccountController) CreateAccount(ctx *gin.Context) {
 }
 
 // 查询
-func (c *AccountController) GetAccountList(ctx *gin.Context) {
-	res, err := service.GetAccount(ctx, database.DB)
+func (c *DepartmentController) GetDepartmentList(ctx *gin.Context) {
+	res, err := service.GetDepartmentList(ctx, database.DB)
 	if err != nil {
 		utils.GetResponseJson(ctx, utils.FAIL, err.Error(), nil)
 	} else {
@@ -32,8 +32,8 @@ func (c *AccountController) GetAccountList(ctx *gin.Context) {
 }
 
 // 更新
-func (c *AccountController) UpdateAccount(ctx *gin.Context) {
-	res, err := service.UpdateAccount(ctx, database.DB)
+func (c *DepartmentController) UpdateDepartment(ctx *gin.Context) {
+	res, err := service.UpdateDepartment(ctx, database.DB)
 	if err != nil {
 		utils.GetResponseJson(ctx, utils.FAIL, err.Error(), nil)
 	} else {
@@ -42,8 +42,8 @@ func (c *AccountController) UpdateAccount(ctx *gin.Context) {
 }
 
 // 删除
-func (c *AccountController) DeleteAccount(ctx *gin.Context) {
-	res, err := service.DeleteAccount(ctx, database.DB)
+func (c *DepartmentController) DeleteDepartment(ctx *gin.Context) {
+	res, err := service.DeleteDepartment(ctx, database.DB)
 	if err != nil {
 		utils.GetResponseJson(ctx, utils.FAIL, err.Error(), nil)
 	} else {

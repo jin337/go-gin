@@ -11,8 +11,8 @@ type User struct {
 	ID        uint           `json:"id" gorm:"primarykey;comment:唯一标识符"`
 	UserName  string         `json:"user_name" validate:"required,min=3,max=20" gorm:"comment:昵称"`
 	Phone     string         `json:"phone" validate:"required,len=11,numeric" gorm:"unique;comment:手机号"`
-	Gender    *int           `json:"gender" validate:"required,oneof=0 1" gorm:"comment:性别 (0: 女, 1: 男)"`
-	Status    int            `json:"status" validate:"required,oneof=1 2 3" gorm:"comment:状态 (1: 正式, 2: 试用期, 3: 离职)"`
+	Gender    *int           `json:"gender" validate:"required,oneof=0 1" gorm:"comment:性别 (0女, 1男)"`
+	Status    int            `json:"status" validate:"required,oneof=1 2 3" gorm:"comment:状态 (1正式, 2试用期, 3离职)"`
 	CreatedAt time.Time      `json:"created_at" gorm:"comment:创建时间"`
 	UpdatedAt time.Time      `json:"updated_at" gorm:"comment:更新时间"`
 	DeletedAt gorm.DeletedAt `json:"deleted_at" gorm:"index;comment:软删除时间"`

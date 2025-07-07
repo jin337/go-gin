@@ -45,16 +45,22 @@ func RegisterAPIRoutes(r *gin.Engine) {
 		auth := v1.Group("/", middleware.AuthMiddleware())
 		{
 			UserController := new(controller.UserController)
-			auth.POST("/user", UserController.GetUser)
+			auth.POST("/user/list", UserController.GetUserList)
 			auth.POST("/user/create", UserController.CreateUser)
 			auth.POST("/user/update", UserController.UpdateUser)
 			auth.POST("/user/delete", UserController.DeleteUser)
 
 			AccountController := new(controller.AccountController)
-			auth.POST("/account", AccountController.GetAccount)
+			auth.POST("/account/list", AccountController.GetAccountList)
 			auth.POST("/account/create", AccountController.CreateAccount)
 			auth.POST("/account/update", AccountController.UpdateAccount)
 			auth.POST("/account/delete", AccountController.DeleteAccount)
+
+			DepartmentController := new(controller.DepartmentController)
+			auth.POST("/dept/list", DepartmentController.GetDepartmentList)
+			auth.POST("/dept/create", DepartmentController.CreateDepartment)
+			auth.POST("/dept/update", DepartmentController.UpdateDepartment)
+			auth.POST("/dept/delete", DepartmentController.DeleteDepartment)
 		}
 	}
 }

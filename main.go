@@ -40,9 +40,10 @@ func main() {
 	if config.GetGlobalConfig().Database.MigrateTables {
 		log.Println("执行表结构迁移...")
 		db.AutoMigrate(
+			&model.BlacklistedToken{},
 			&model.User{},
 			&model.Account{},
-			&model.BlacklistedToken{},
+			&model.Department{},
 		)
 	}
 

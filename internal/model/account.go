@@ -15,7 +15,7 @@ type Account struct {
 	UserName    string     `json:"user_name" validate:"required,min=3,max=20" gorm:"comment:昵称"`
 	PassWord    string     `json:"pass_word" validate:"required,min=6" gorm:"comment:密码"`
 	Phone       string     `json:"phone" validate:"required,len=11,numeric" gorm:"unique;comment:手机号"`
-	IsActive    int        `json:"is_active" validate:"required,oneof=0 1" gorm:"comment:状态 (0: 禁用, 1: 启用)"`
+	IsActive    int        `json:"is_active" validate:"required,oneof=0 1" gorm:"comment:状态 (0禁用, 1启用)"`
 	LastLoginAt *time.Time `json:"last_login_at" gorm:"comment:最后一次登录时间"`
 
 	CreatedAt time.Time      `json:"created_at" gorm:"comment:创建时间"`

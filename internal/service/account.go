@@ -27,7 +27,7 @@ func CreateAccount(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 	hashed, _ := bcrypt.GenerateFromPassword([]byte(req.PassWord), bcrypt.DefaultCost)
 	passWord := string(hashed)
 	// 创建账号
-	account := &model.Account{
+	body := &model.Account{
 		LoginName: loginName,
 		PassWord:  passWord,
 		UserName:  req.UserName,
@@ -35,7 +35,7 @@ func CreateAccount(ctx *gin.Context, DB *gorm.DB) (interface{}, error) {
 		IsActive:  1,
 	}
 
-	if err := DB.Create(account).Error; err != nil {
+	if err := DB.Create(body).Error; err != nil {
 		return nil, utils.TranslateDBError(err) // 转换错误提示内容
 	}
 
